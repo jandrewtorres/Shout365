@@ -23,7 +23,7 @@ CREATE TABLE review
   (
      rid        INT,
      bid        INT NOT NULL,
-     uid        VARCHAR(20) NOT NULL,
+     uid        INT NOT NULL,
      stars      INT NOT NULL,
      date       DATETIME NOT NULL,
      text       TEXT(20000),
