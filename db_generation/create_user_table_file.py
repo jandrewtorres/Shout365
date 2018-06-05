@@ -41,7 +41,7 @@ dates = generate_user_join_dates()
 # # output insert intos
 out_file = open(OUTPUT_FILENAME, 'w+')
 for uid in uids:
-    out_file.write('INSERT INTO User (uid, name, date_joined)' \
+    out_file.write('INSERT INTO user (uid, name, date_joined)' \
         + ' VALUES (\'' \
         + str(uid) + '\', \'' \
         + user_names[uid] + '\', \'' \
