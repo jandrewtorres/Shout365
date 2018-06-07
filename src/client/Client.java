@@ -97,8 +97,10 @@ public class Client extends Application {
             Statement stmt = con.createStatement();
             String sql;
             sql = "SELECT * from business";
+            // Is a set of tuples
             ResultSet rs = stmt.executeQuery(sql);
             
+            // rs.next to advance to the next tuple ( each row returned) in the set.
             while(rs.next()){
                 //Retrieve by column name
                 int id  = rs.getInt("bid");
