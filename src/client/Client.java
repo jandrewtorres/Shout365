@@ -48,7 +48,7 @@ public class Client {
         
         try {
             String strSshUser = "nmfrench"; // SSH loging username Whatever your user is
-            String strSshPassword = ""; // SSH login password Whatever your password is 
+            String strSshPassword = "  "; // SSH login password Whatever your password is 
             String strSshHost = "unix2.csc.calpoly.edu"; // hostname or ip or
                                                             // SSH server
             int nSshPort = 22; // remote SSH host port number
