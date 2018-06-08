@@ -1,3 +1,8 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package model;
 
 /**
@@ -6,14 +11,29 @@ package model;
  */
 public final class Friend 
 {
-    private final int ID;
-    private final int uid;
-    private final int fid;
+    private int ID;
+    private int uID;
+    private int fID;
     
-    public Friend(int ID, int uid, int fid)
+    public Friend(int ID, int uID, int fID)
     {
         this.ID = ID;
-        this.uid = uid;
-        this.fid = fid;
+        this.uID = uID;
+        this.fID = fID;
+    }
+    
+    public int getID()
+    {
+        return ID;
+    }
+    
+    public int getUserID()
+    {
+        return uID;
+    }
+    
+    public int getFriendID()
+    {
+        return fID;
     }
 }

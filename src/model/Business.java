@@ -1,3 +1,8 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package model;
 
 /**
@@ -6,25 +11,65 @@ package model;
  */
 public final class Business 
 {
-    public final int bID;
-    public final String name;
-    public final String address;
-    public final String city;
-    public final String state;
-    public final String zip;
-    public final float latitude;
-    public final float longitude;
+    private final int bID;
+    private final String Name;
+    private final String Address;
+    private final String City;
+    private final String State;
+    private final String Zip;
+    private final float Latitude;
+    private final float Longitude;
     
-    public Business(int bID, String name, String address, String city, String state, 
-    String zip, float latitude, float longitude)
+    public Business(int bID, String Name, String Address, String City, String State, 
+    String Zip, float Latitude, float Longitude)
     {
         this.bID = bID;
-        this.name = name;
-        this.address = address;
-        this.city = city;
-        this.state = state;
-        this.zip = zip;
-        this.latitude = latitude;
-        this.longitude = longitude;          
+        this.Name = Name;
+        this.Address = Address;
+        this.City = City;
+        this.State = State;
+        this.Zip = Zip;
+        this.Latitude = Latitude;
+        this.Longitude = Longitude;          
+    }
+    
+    public int getBusinessID()
+    {
+        return bID;    
+    }
+    
+    public String getName()
+    {
+        return Name;
+    }
+    
+    public String getAddress()
+    {
+        return Address;
+    }
+    
+    public String getCity()
+    {
+        return City;
+    }
+    
+    public String getState()
+    {
+        return State;
+    }    
+    
+    public String getZIP()
+    {
+        return Zip;
+    }
+    
+    public float getLat()
+    {
+        return Latitude;
+    }
+    
+    public float getLong()
+    {
+        return Longitude;
     }
 }
