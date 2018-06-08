@@ -24,9 +24,13 @@ import java.text.DateFormat;
 import javax.swing.JSeparator;
 import java.awt.Color;
 import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.JSpinner;
+import javax.swing.JScrollPane;
+import javax.swing.JComboBox;
 
 public class HomeScreen {
 
@@ -34,6 +38,7 @@ public class HomeScreen {
 	private User u;
 	private JTextField emailField;
 	private JTextField pwordField;
+	private JTextField restaurantNameField;
 	
 	/**
 	 * Launch the application.
@@ -44,6 +49,7 @@ public class HomeScreen {
 				try {
 					User u = new User("test", new Date(new Timestamp(System.currentTimeMillis()).getTime()), "test@test", "test");
 					HomeScreen window = new HomeScreen(u);
+					window.show();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -67,6 +73,9 @@ public class HomeScreen {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
+		SpinnerNumberModel model = new SpinnerNumberModel();
+		model.setMinimum(1);
+		
 		frame = new JFrame();
 		frame.setBounds(100, 100, 974, 686);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -81,9 +90,96 @@ public class HomeScreen {
 		
 		JPanel searchPanel = new JPanel();
 		tabbedPane.addTab("Search Restaurants", null, searchPanel, null);
+		searchPanel.setLayout(null);
+		
+		JLabel lblRestaurantName = new JLabel("Restaurant Name:");
+		lblRestaurantName.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		lblRestaurantName.setBounds(12, 76, 185, 35);
+		searchPanel.add(lblRestaurantName);
+		
+		restaurantNameField = new JTextField();
+		restaurantNameField.setToolTipText("Leave blank for wildcard");
+		restaurantNameField.setBounds(209, 82, 247, 22);
+		searchPanel.add(restaurantNameField);
+		restaurantNameField.setColumns(10);
+		
+		JPanel raterPanel = new JPanel();
+		StarRater starRater = new StarRater(5,0,0);
+		starRater.addStarListener(new StarRater.StarListener() {
+			
+			@Override
+			public void handleSelection(int selection) {
+				System.out.println(selection);
+				
+			}
+		});
+		
+		raterPanel.add(starRater);
+		raterPanel.setBounds(209, 139, 77, 22);
+		searchPanel.add(raterPanel);
+		
+		JLabel lblRating = new JLabel("Rating:");
+		lblRating.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		lblRating.setBounds(12, 139, 185, 22);
+		searchPanel.add(lblRating);
+		
+		JLabel lblAtLeast = new JLabel("At Least ");
+		lblAtLeast.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		lblAtLeast.setBounds(494, 76, 105, 35);
+		searchPanel.add(lblAtLeast);
+		JSpinner spinner = new JSpinner(model);
+		spinner.setValue(1);
+		spinner.setBounds(626, 75, 38, 36);
+		searchPanel.add(spinner);
+		
+		JLabel lblReviews = new JLabel("Reviews");
+		lblReviews.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		lblReviews.setBounds(739, 76, 185, 35);
+		searchPanel.add(lblReviews);
+		
+		JButton btnSearch = new JButton("Search");
+		btnSearch.setBounds(338, 187, 272, 50);
+		searchPanel.add(btnSearch);
+		
+		JLabel lblSearchFilters = new JLabel("Search Filters");
+		lblSearchFilters.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 25));
+		lblSearchFilters.setBounds(12, 13, 344, 62);
+		searchPanel.add(lblSearchFilters);
+		
+		JSeparator separator_1 = new JSeparator();
+		separator_1.setBounds(0, 250, 948, 8);
+		searchPanel.add(separator_1);
+		
+		JLabel lblResults = new JLabel("Results");
+		lblResults.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 25));
+		lblResults.setBounds(12, 271, 344, 62);
+		searchPanel.add(lblResults);
+		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(115, 417, -79, 35);
+		searchPanel.add(scrollPane);
+		
+		JScrollPane scrollPane_1 = new JScrollPane();
+		scrollPane_1.setBounds(12, 325, 924, 271);
+		searchPanel.add(scrollPane_1);
+		
+		JSeparator separator_2 = new JSeparator();
+		separator_2.setOrientation(SwingConstants.VERTICAL);
+		separator_2.setBounds(473, 50, 9, 124);
+		searchPanel.add(separator_2);
+		
+		JLabel lblCategory = new JLabel("Category:");
+		lblCategory.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		lblCategory.setBounds(494, 133, 105, 35);
+		searchPanel.add(lblCategory);
+		
+		JComboBox comboBox = new JComboBox();
+		comboBox.setBounds(626, 139, 205, 22);
+		searchPanel.add(comboBox);
 		
 		JPanel reviewPanel = new JPanel();
-		tabbedPane.addTab("Write Review", null, reviewPanel, null);
+		tabbedPane.addTab("Add Restaurant", null, reviewPanel, null);
+		
 		
 		JPanel userInfoPanel = new JPanel();
 		tabbedPane.addTab("User Information", null, userInfoPanel, null);
