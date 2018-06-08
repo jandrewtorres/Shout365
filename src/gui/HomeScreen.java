@@ -16,6 +16,7 @@ import model.User;
 
 import java.awt.Font;
 import java.sql.Date;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
@@ -23,6 +24,8 @@ import java.text.DateFormat;
 
 import javax.swing.JSeparator;
 import java.awt.Color;
+import java.awt.Dimension;
+
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.JButton;
@@ -31,6 +34,9 @@ import java.awt.event.ActionEvent;
 import javax.swing.JSpinner;
 import javax.swing.JScrollPane;
 import javax.swing.JComboBox;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import javax.swing.JCheckBox;
 
 public class HomeScreen {
 
@@ -39,6 +45,12 @@ public class HomeScreen {
 	private JTextField emailField;
 	private JTextField pwordField;
 	private JTextField restaurantNameField;
+	
+	private StarRater starRater;
+	private JSpinner rSpinner;
+	private JComboBox categoryBox;
+	private JCheckBox exactChck;
+	private JScrollPane scrollPane;
 	
 	/**
 	 * Launch the application.
@@ -74,7 +86,7 @@ public class HomeScreen {
 	 */
 	private void initialize() {
 		SpinnerNumberModel model = new SpinnerNumberModel();
-		model.setMinimum(1);
+		model.setMinimum(0);
 		
 		frame = new JFrame();
 		frame.setBounds(100, 100, 974, 686);
@@ -92,33 +104,34 @@ public class HomeScreen {
 		tabbedPane.addTab("Search Restaurants", null, searchPanel, null);
 		searchPanel.setLayout(null);
 		
-		JLabel lblRestaurantName = new JLabel("Restaurant Name:");
+		JLabel lblRestaurantName = new JLabel("Name:");
 		lblRestaurantName.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		lblRestaurantName.setBounds(12, 76, 185, 35);
+		lblRestaurantName.setBounds(12, 76, 77, 35);
 		searchPanel.add(lblRestaurantName);
 		
 		restaurantNameField = new JTextField();
+		restaurantNameField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyTyped(KeyEvent arg0) {
+				if(!restaurantNameField.getText().isEmpty()) {
+					//starRater.setEnabled(false);
+					//rSpinner.setEnabled(false);
+					
+				}
+			}
+		});
 		restaurantNameField.setToolTipText("Leave blank for wildcard");
 		restaurantNameField.setBounds(209, 82, 247, 22);
 		searchPanel.add(restaurantNameField);
 		restaurantNameField.setColumns(10);
 		
 		JPanel raterPanel = new JPanel();
-		StarRater starRater = new StarRater(5,0,0);
-		starRater.addStarListener(new StarRater.StarListener() {
-			
-			@Override
-			public void handleSelection(int selection) {
-				System.out.println(selection);
-				
-			}
-		});
-		
+		starRater = new StarRater(5,0,0);	
 		raterPanel.add(starRater);
 		raterPanel.setBounds(209, 139, 77, 22);
 		searchPanel.add(raterPanel);
 		
-		JLabel lblRating = new JLabel("Rating:");
+		JLabel lblRating = new JLabel("Rating At Least:");
 		lblRating.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		lblRating.setBounds(12, 139, 185, 22);
 		searchPanel.add(lblRating);
@@ -127,10 +140,10 @@ public class HomeScreen {
 		lblAtLeast.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		lblAtLeast.setBounds(494, 76, 105, 35);
 		searchPanel.add(lblAtLeast);
-		JSpinner spinner = new JSpinner(model);
-		spinner.setValue(1);
-		spinner.setBounds(626, 75, 38, 36);
-		searchPanel.add(spinner);
+		rSpinner = new JSpinner(model);
+		rSpinner.setValue(0);
+		rSpinner.setBounds(626, 75, 38, 36);
+		searchPanel.add(rSpinner);
 		
 		JLabel lblReviews = new JLabel("Reviews");
 		lblReviews.setFont(new Font("Tahoma", Font.PLAIN, 20));
@@ -138,10 +151,50 @@ public class HomeScreen {
 		searchPanel.add(lblReviews);
 		
 		JButton btnSearch = new JButton("Search");
+		btnSearch.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				int stars = starRater.getSelection();
+				String name = restaurantNameField.getText();
+				int spinnerVal = (int) rSpinner.getValue();
+				String category = (String) categoryBox.getSelectedItem();
+				boolean exactChecked = exactChck.isSelected();
+				System.out.println("Name: " + name + ", stars: " + stars + ", spinner val: " + spinnerVal + ", category: " + category);
+				
+				if(exactChecked) {
+					System.out.println("runing");
+					try {
+						Statement stmt = Client.getConnection().createStatement();
+						String sql = "select * from business where name = '" + name + "'";
+						System.out.println(sql);
+						ResultSet r  = stmt.executeQuery(sql);
+						while(r.next()) {
+							String rName = r.getString("name");
+							String rAddress = r.getString("address") + " " + r.getString("city") + ", " + r.getString("state") + " " + r.getString("postal_code");
+							String rCategory = r.getString("category");
+							System.out.println(rName);
+							System.out.println(rAddress);
+							System.out.println(rCategory);
+							System.out.println();
+							
+							JPanel p = new JPanel();
+							p.setPreferredSize(new Dimension(100,100));
+							p.add(new JLabel(rName));
+							p.add(new JLabel(rAddress));
+							p.add(new JLabel(rCategory));
+							scrollPane.add(p);
+						}
+						
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		});
 		btnSearch.setBounds(338, 187, 272, 50);
 		searchPanel.add(btnSearch);
 		
-		JLabel lblSearchFilters = new JLabel("Search Filters");
+		JLabel lblSearchFilters = new JLabel("Restaurant Search Filters");
 		lblSearchFilters.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 25));
 		lblSearchFilters.setBounds(12, 13, 344, 62);
 		searchPanel.add(lblSearchFilters);
@@ -155,7 +208,7 @@ public class HomeScreen {
 		lblResults.setBounds(12, 271, 344, 62);
 		searchPanel.add(lblResults);
 		
-		JScrollPane scrollPane = new JScrollPane();
+		scrollPane = new JScrollPane();
 		scrollPane.setBounds(115, 417, -79, 35);
 		searchPanel.add(scrollPane);
 		
@@ -173,9 +226,26 @@ public class HomeScreen {
 		lblCategory.setBounds(494, 133, 105, 35);
 		searchPanel.add(lblCategory);
 		
-		JComboBox comboBox = new JComboBox();
-		comboBox.setBounds(626, 139, 205, 22);
-		searchPanel.add(comboBox);
+		categoryBox = new JComboBox(Client.RESTAURANT_CATEGORIES);
+		categoryBox.setBounds(626, 139, 205, 22);
+		searchPanel.add(categoryBox);
+		
+		exactChck = new JCheckBox("Exact");
+		exactChck.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if(exactChck.isSelected()) {
+					rSpinner.setEnabled(false);
+					starRater.setEnabled(false);
+					categoryBox.setEnabled(false);
+				} else {
+					rSpinner.setEnabled(true);
+					starRater.setEnabled(true);
+					categoryBox.setEnabled(true);
+				}
+			}
+		});
+		exactChck.setBounds(131, 76, 70, 35);
+		searchPanel.add(exactChck);
 		
 		JPanel reviewPanel = new JPanel();
 		tabbedPane.addTab("Add Restaurant", null, reviewPanel, null);

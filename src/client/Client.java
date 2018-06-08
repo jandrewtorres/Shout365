@@ -19,6 +19,8 @@ public class Client {
     
     public static Connection CONNECTION = null;
 	
+    public static String[] RESTAURANT_CATEGORIES = {"", "Italian", "Greek", "Chinese", "American"};
+    
 	
     private static void doSshTunnel(String strSshUser, String strSshPassword, String strSshHost, int nSshPort,
             String strRemoteHost, int nLocalPort, int nRemotePort) throws JSchException {
