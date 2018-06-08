@@ -19,8 +19,8 @@ import javax.swing.JOptionPane;
 import java.awt.Font;
 import javax.swing.SwingConstants;
 
-import classes.User;
 import client.Client;
+import model.User;
 
 public class LoginScreen {
 
