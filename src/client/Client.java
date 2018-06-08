@@ -8,26 +8,23 @@ package client;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
+
+import gui.SplashScreen;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.SQLException;
 import java.util.Properties;
-import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.StackPane;
-import javafx.stage.Stage;
 
 /**
  *
  * @author jtorres
  */
-public class Client extends Application {
+public class Client {
     
-    
+    public static Connection CONNECTION = null;
+	
+	
     private static void doSshTunnel(String strSshUser, String strSshPassword, String strSshHost, int nSshPort,
             String strRemoteHost, int nLocalPort, int nRemotePort) throws JSchException {
         final JSch jsch = new JSch();
@@ -41,38 +38,17 @@ public class Client extends Application {
         session.connect();
         session.setPortForwardingL(nLocalPort, strRemoteHost, nRemotePort);
     }
-    
-    @Override
-    public void start(Stage primaryStage) {
-        Button btn = new Button();
-        btn.setText("Say 'Hello World'");
-        btn.setOnAction(new EventHandler<ActionEvent>() {
-            
-            @Override
-            public void handle(ActionEvent event) {
-                System.out.println("Hello World!");
-            }
-        });
-        
-        StackPane root = new StackPane();
-        root.getChildren().add(btn);
-        
-        Scene scene = new Scene(root, 300, 250);
-        
-        primaryStage.setTitle("Hello World!");
-        primaryStage.setScene(scene);
-        primaryStage.show();
-    }
-
+ 
     /**
      * @param args the command line arguments
+     * @throws SQLException 
      */
-    public static void main(String[] args) 
+    public static void main(String[] args) throws SQLException 
     {
         
         try {
-            String strSshUser = ""; // SSH loging username Whatever your user is
-            String strSshPassword = ""; // SSH login password Whatever your password is 
+            String strSshUser = "nmfrench"; // SSH loging username Whatever your user is
+            String strSshPassword = "1997Ss77tg12!"; // SSH login password Whatever your password is 
             String strSshHost = "unix2.csc.calpoly.edu"; // hostname or ip or
                                                             // SSH server
             int nSshPort = 22; // remote SSH host port number
@@ -94,36 +70,18 @@ public class Client extends Application {
                     "/shout?useLegacyDatetimeCode=false&serverTimezone=UTC", strDbUser,
                     strDbPassword);
             
-            Statement stmt = con.createStatement();
-            String sql;
-            sql = "SELECT * from business";
-            // Is a set of tuples
-            ResultSet rs = stmt.executeQuery(sql);
-            
-            // rs.next to advance to the next tuple ( each row returned) in the set.
-            while(rs.next()){
-                //Retrieve by column name
-                int id  = rs.getInt("bid");
-                String name = rs.getString("name");
-                String city = rs.getString("city");
-
-                //Display values
-                System.out.println("ID: " + id);
-                System.out.println("name: " + name);
-                System.out.println("city :" + city);
-
-             }
-            
-            con.close();
-            
-            
+            // this is probably a terrible way to do this but who cares
+            CONNECTION = con; 
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            
         }
-        System.out.println("LOL");
-        launch(args);
+        SplashScreen splashScreen = new SplashScreen();
+        splashScreen.show();
+    }
+    
+    public static Connection getConnection() {
+    	// we could do a null check or something but let's assume we could connect
+    	return CONNECTION;
     }
     
 }

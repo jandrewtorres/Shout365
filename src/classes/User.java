@@ -5,7 +5,7 @@
  */
 package classes;
 
-import java.util.Calendar;
+import java.sql.Date;
 
 /**
  *
@@ -13,25 +13,33 @@ import java.util.Calendar;
  */
 public final class User 
 {
-    private int uID;
-    private String Name;
+	
+	private String username;
+	private Date joined;
+	private String email;
+	private String password;
     
-    //Again don't know DateTIME class in SQL
-    private Calendar date;
-    
-    public User(int uID, String Name)
+    public User(String username, Date joined, String email, String password) 
     {
-        this.uID = uID;
-        this.Name = Name;
+    	this.username = username;
+    	this.joined = joined;
+    	this.email = email;
+    	this.password = password;
     }
-    
-    public int getUserID()
-    {
-        return uID;
-    }
-    
-    public String getName()
-    {
-        return Name;
-    }
+
+	public String getUsername() {
+		return username;
+	}
+
+	public Date getJoined() {
+		return joined;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public String getPassword() {
+		return password;
+	}
 }
