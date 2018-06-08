@@ -76,13 +76,14 @@ public class LoginScreen {
 					ResultSet r = stmt.executeQuery(sql);
 					while(r.next()) {
 						System.out.println("runing result set");
+						int id = r.getInt("uid");
 						String u = r.getString("username");
 						String p = r.getString("password");
 						Date d = r.getDate("date_joined");
 						String em = r.getString("email");
 						if(u.equals(username) && p.equals(password)) {
 							System.out.println("Login Successful");
-							User user = new User(u, d, em, p);
+							User user = new User(id, u, d, em, p);
 							HomeScreen h = new HomeScreen(user);
 							h.show();
 							frame.dispose();

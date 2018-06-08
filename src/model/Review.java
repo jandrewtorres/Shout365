@@ -5,7 +5,7 @@
  */
 package model;
 
-import java.util.Calendar;
+import java.sql.Date;
 
 /**
  *
@@ -17,18 +17,18 @@ public final class Review
     private final int bID;
     private final int uID;
     private final int stars;
-    private final int usefulness;
+	private Date date;
+	private String comments;
     
-    // Not sure how DateTime is done inside of mySQL So not touching it yet.
-    public Calendar date;
     
-    public Review(int rid, int bid, int uid, int stars, int usefulness)
+    public Review(int rid, int bid, int uid, int stars, Date date, String comments)
     {
         this.rID = rid;
         this.bID = bid;
         this.uID = uid;
         this.stars = stars;
-        this.usefulness = usefulness;
+        this.date = date;
+        this.comments = comments;
     }
     
     public int getReviewID()
@@ -50,11 +50,14 @@ public final class Review
     {
       return stars;   
     }
-    
-    public int getUsefulness()
-    {
-        return usefulness;
-    }
+
+	public Date getDate() {
+		return date;
+	}
+
+	public String getComments() {
+		return comments;
+	}
     
     
 }

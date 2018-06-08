@@ -12,6 +12,7 @@ import java.awt.FlowLayout;
 import javax.swing.SwingConstants;
 
 import client.Client;
+import model.Business;
 import model.User;
 
 import java.awt.Font;
@@ -52,6 +53,12 @@ public class HomeScreen {
 	private JCheckBox exactChck;
 	private JScrollPane scrollPane;
 	private BusinessObject b;
+	private JTextField rNameField;
+	private JTextField rAddressField;
+	private JTextField rCityField;
+	private JTextField rPostalCode;
+	private JComboBox rCategoryBox;
+	private JComboBox rStateBox; 
 	
 	/**
 	 * Launch the application.
@@ -60,7 +67,7 @@ public class HomeScreen {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					User u = new User("test", new Date(new Timestamp(System.currentTimeMillis()).getTime()), "test@test", "test");
+					User u = new User(0, "test", new Date(new Timestamp(System.currentTimeMillis()).getTime()), "test@test", "test");
 					HomeScreen window = new HomeScreen(u);
 					window.show();
 				} catch (Exception e) {
@@ -170,15 +177,15 @@ public class HomeScreen {
 						System.out.println(sql);
 						ResultSet r  = stmt.executeQuery(sql);
 						while(r.next()) {
+							int rBid = r.getInt("bid");
 							String rName = r.getString("name");
-							String rAddress = r.getString("address") + " " + r.getString("city") + ", " + r.getString("state") + " " + r.getString("postal_code");
+							String rAddress = r.getString("address");
+							String rCity = r.getString("city");
+							String rState = r.getString("state");
+							String rPC = r.getString("postal_code");
 							String rCategory = r.getString("category");
-							System.out.println(rName);
-							System.out.println(rAddress);
-							System.out.println(rCategory);
-							System.out.println();
-							
-							b.addBusiness(rName, rAddress, rCategory);
+							Business biz = new Business(rBid, rName, rAddress, rCity, rState, rPC, rCategory);
+							b.addBusiness(biz);
 						}
 						
 					} catch (SQLException e) {
@@ -214,7 +221,7 @@ public class HomeScreen {
 //		scrollPane.setBounds(12, 325, 924, 271);
 //		searchPanel.add(scrollPane);
 		
-		b = new BusinessObject();
+		b = new BusinessObject(u);
 		b.setBounds(12, 325, 924, 271);
 		searchPanel.add(b);
 		
@@ -229,6 +236,7 @@ public class HomeScreen {
 		searchPanel.add(lblCategory);
 		
 		categoryBox = new JComboBox(Client.RESTAURANT_CATEGORIES);
+		categoryBox.setToolTipText("Leave blank for any category");
 		categoryBox.setBounds(626, 139, 205, 22);
 		searchPanel.add(categoryBox);
 		
@@ -251,6 +259,98 @@ public class HomeScreen {
 		
 		JPanel reviewPanel = new JPanel();
 		tabbedPane.addTab("Add Restaurant", null, reviewPanel, null);
+		reviewPanel.setLayout(null);
+		
+		JLabel lblInsertRestaurantInformation = new JLabel("Insert Restaurant Information");
+		lblInsertRestaurantInformation.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 25));
+		lblInsertRestaurantInformation.setBounds(12, 13, 344, 62);
+		reviewPanel.add(lblInsertRestaurantInformation);
+		
+		JLabel label_1 = new JLabel("Name:");
+		label_1.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		label_1.setBounds(12, 88, 77, 35);
+		reviewPanel.add(label_1);
+		
+		JLabel lblAddress = new JLabel("Address:");
+		lblAddress.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		lblAddress.setBounds(12, 136, 111, 35);
+		reviewPanel.add(lblAddress);
+		
+		JLabel lblCity = new JLabel("City:");
+		lblCity.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		lblCity.setBounds(12, 184, 77, 35);
+		reviewPanel.add(lblCity);
+		
+		JLabel lblState = new JLabel("State:");
+		lblState.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		lblState.setBounds(12, 232, 77, 35);
+		reviewPanel.add(lblState);
+		
+		JLabel lblPostalCode = new JLabel("Postal Code:");
+		lblPostalCode.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		lblPostalCode.setBounds(12, 280, 141, 35);
+		reviewPanel.add(lblPostalCode);
+		
+		JLabel lblFoodCategory = new JLabel("Food Category:");
+		lblFoodCategory.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		lblFoodCategory.setBounds(12, 328, 167, 35);
+		reviewPanel.add(lblFoodCategory);
+		
+		rNameField = new JTextField();
+		rNameField.setBounds(264, 94, 241, 22);
+		reviewPanel.add(rNameField);
+		rNameField.setColumns(10);
+		
+		rAddressField = new JTextField();
+		rAddressField.setColumns(10);
+		rAddressField.setBounds(264, 142, 241, 22);
+		reviewPanel.add(rAddressField);
+		
+		rCityField = new JTextField();
+		rCityField.setColumns(10);
+		rCityField.setBounds(264, 190, 241, 22);
+		reviewPanel.add(rCityField);
+		
+		rPostalCode = new JTextField();
+		rPostalCode.setColumns(10);
+		rPostalCode.setBounds(264, 286, 241, 22);
+		reviewPanel.add(rPostalCode);
+		
+		rCategoryBox = new JComboBox(Client.NO_DEFAULT_RESTAURANT_CATEGORIES);
+		rCategoryBox.setBounds(264, 334, 241, 22);
+		reviewPanel.add(rCategoryBox);
+		
+		JButton btnAddRestaurant = new JButton("Add Restaurant");
+		btnAddRestaurant.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				String rName = rNameField.getText();
+				String rAddress = rAddressField.getText();
+				String rCity = rCityField.getText();
+				String rPC = rPostalCode.getText();
+				String rCategory = (String) rCategoryBox.getSelectedItem();
+				String rState = (String) rStateBox.getSelectedItem();
+				if(!rName.isEmpty() && !rAddress.isEmpty() && !rCity.isEmpty() && !rPC.isEmpty() && !rCategory.isEmpty() && !rState.isEmpty()) {
+					String sql = "insert into business(name, address, city, state, postal_code, category) values ('" + rName + "','" + rAddress + "','" + rCity + "','" + rState + "','" + rPC + "','" + rCategory + "')";
+					try {
+						System.out.println(sql);
+						Statement stmt = Client.getConnection().createStatement();
+						stmt.executeUpdate(sql);
+						JOptionPane.showMessageDialog(new JFrame(), "Restaurant successfully added", "", JOptionPane.INFORMATION_MESSAGE);
+					} catch (SQLException e) {
+						JOptionPane.showMessageDialog(new JFrame(), e.getMessage(), "", JOptionPane.ERROR_MESSAGE);
+						e.printStackTrace();
+					}
+				} else {
+					JOptionPane.showMessageDialog(new JFrame(), "All fields must be filled out", "", JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		});
+		btnAddRestaurant.setBounds(338, 394, 272, 50);
+		reviewPanel.add(btnAddRestaurant);
+		
+		rStateBox = new JComboBox(Client.STATES);
+		rStateBox.setBounds(264, 238, 241, 22);
+		reviewPanel.add(rStateBox);
 		
 		
 		JPanel userInfoPanel = new JPanel();

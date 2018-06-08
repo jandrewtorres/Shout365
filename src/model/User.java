@@ -19,9 +19,11 @@ public final class User
 	private Date joined;
 	private String email;
 	private String password;
+	private final int uid;
     
-    public User(String username, Date joined, String email, String password) 
+    public User(int uid, String username, Date joined, String email, String password) 
     {
+    	this.uid = uid;
     	this.username = username;
     	this.joined = joined;
     	this.email = email;
@@ -42,5 +44,9 @@ public final class User
 
 	public String getPassword() {
 		return password;
+	}
+
+	public int getUid() {
+		return uid;
 	}
 }

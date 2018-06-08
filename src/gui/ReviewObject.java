@@ -20,10 +20,7 @@ import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.MatteBorder;
 
-import model.Business;
-import model.User;
-
-public class BusinessObject extends JPanel {
+public class ReviewObject extends JPanel {
 
 	/**
 	 * 
@@ -31,12 +28,10 @@ public class BusinessObject extends JPanel {
 	private static final long serialVersionUID = 1L;
 
 	private JPanel mainList;
-	private User u;
-	
+
 	private ArrayList<JPanel> activePanels;
 	
-	public BusinessObject(User u) {
-		this.u = u;
+	public ReviewObject() {
 		activePanels = new ArrayList<>();
 		setLayout(new BorderLayout());
 
@@ -48,47 +43,17 @@ public class BusinessObject extends JPanel {
 		mainList.add(new JPanel(), gbc);
 
 		add(new JScrollPane(mainList));
-
-		/**JButton add = new JButton("Add");
-		add.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JPanel panel = new JPanel();
-				panel.add(new JLabel("Hello"));
-				panel.setBorder(new MatteBorder(0, 0, 1, 0, Color.GRAY));
-				GridBagConstraints gbc = new GridBagConstraints();
-				gbc.gridwidth = GridBagConstraints.REMAINDER;
-				gbc.weightx = 1;
-				gbc.fill = GridBagConstraints.HORIZONTAL;
-				mainList.add(panel, gbc, 0);
-
-				validate();
-				repaint();
-			}
-		});
-
-		add(add, BorderLayout.SOUTH);**/
 	}
 	
-	public void addBusiness(Business b) {
+	public void addReview(String name, String address, String category) {
 		GridLayout gLayout = new GridLayout(0, 3);
 		JPanel panel = new JPanel(gLayout);
 		//lblUsername.setHorizontalAlignment(SwingConstants.CENTER);;
-		panel.add(new JLabel(b.getName(), SwingConstants.CENTER));
-		panel.add(new JLabel(b.getAddress(), SwingConstants.CENTER));
-		panel.add(new JLabel(b.getCategory(), SwingConstants.CENTER));
+		panel.add(new JLabel(name, SwingConstants.CENTER));
+		panel.add(new JLabel(address, SwingConstants.CENTER));
+		panel.add(new JLabel(category, SwingConstants.CENTER));
 		panel.add(new JLabel(""));
-		
-		JButton butt = new JButton("Go to business page");
-		butt.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				BusinessScreen bs = new BusinessScreen(b, u);
-				bs.show();
-			}
-		});
-		
-		panel.add(butt);
+		panel.add(new JButton("Go to business page"));
 		panel.setBorder(new MatteBorder(0, 0, 1, 0, Color.GRAY));
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridwidth = GridBagConstraints.REMAINDER;

@@ -17,20 +17,18 @@ public final class Business
     private final String City;
     private final String State;
     private final String Zip;
-    private final float Latitude;
-    private final float Longitude;
+    private final String category;
     
     public Business(int bID, String Name, String Address, String City, String State, 
-    String Zip, float Latitude, float Longitude)
+    String Zip, String category)
     {
         this.bID = bID;
         this.Name = Name;
         this.Address = Address;
         this.City = City;
         this.State = State;
-        this.Zip = Zip;
-        this.Latitude = Latitude;
-        this.Longitude = Longitude;          
+        this.Zip = Zip;     
+        this.category = category;
     }
     
     public int getBusinessID()
@@ -62,14 +60,16 @@ public final class Business
     {
         return Zip;
     }
-    
-    public float getLat()
-    {
-        return Latitude;
-    }
-    
-    public float getLong()
-    {
-        return Longitude;
-    }
+
+	public int getbID() {
+		return bID;
+	}
+
+	public String getZip() {
+		return Zip;
+	}
+
+	public String getCategory() {
+		return category;
+	}
 }
