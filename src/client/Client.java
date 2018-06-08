@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package client;
 
 import com.jcraft.jsch.JSch;
@@ -26,8 +21,7 @@ import javafx.stage.Stage;
  * @author jtorres
  */
 public class Client extends Application {
-    
-    
+
     private static void doSshTunnel(String strSshUser, String strSshPassword, String strSshHost, int nSshPort,
             String strRemoteHost, int nLocalPort, int nRemotePort) throws JSchException {
         final JSch jsch = new JSch();
@@ -41,24 +35,24 @@ public class Client extends Application {
         session.connect();
         session.setPortForwardingL(nLocalPort, strRemoteHost, nRemotePort);
     }
-    
+
     @Override
     public void start(Stage primaryStage) {
         Button btn = new Button();
         btn.setText("Say 'Hello World'");
         btn.setOnAction(new EventHandler<ActionEvent>() {
-            
+
             @Override
             public void handle(ActionEvent event) {
                 System.out.println("Hello World!");
             }
         });
-        
+
         StackPane root = new StackPane();
         root.getChildren().add(btn);
-        
+
         Scene scene = new Scene(root, 300, 250);
-        
+
         primaryStage.setTitle("Hello World!");
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -67,20 +61,19 @@ public class Client extends Application {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) 
-    {
-        
+    public static void main(String[] args) {
+
         try {
             String strSshUser = ""; // SSH loging username Whatever your user is
             String strSshPassword = ""; // SSH login password Whatever your password is 
             String strSshHost = "unix2.csc.calpoly.edu"; // hostname or ip or
-                                                            // SSH server
+            // SSH server
             int nSshPort = 22; // remote SSH host port number
             String strRemoteHost = "ambari-head.csc.calpoly.edu"; // hostname or
-                                                                    // ip of
-                                                                    // your
-                                                                    // database
-                                                                    // server
+            // ip of
+            // your
+            // database
+            // server
             int nLocalPort = 3366; // local port number use to bind SSH tunnel
             int nRemotePort = 3306; // remote port number of your database
             String strDbUser = "shout"; // database loging username
@@ -90,20 +83,20 @@ public class Client extends Application {
                     nRemotePort);
 
             Class.forName("com.mysql.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:" + nLocalPort +
-                    "/shout?useLegacyDatetimeCode=false&serverTimezone=UTC", strDbUser,
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:" + nLocalPort
+                    + "/shout?useLegacyDatetimeCode=false&serverTimezone=UTC", strDbUser,
                     strDbPassword);
-            
+
             Statement stmt = con.createStatement();
             String sql;
             sql = "SELECT * from business";
             // Is a set of tuples
             ResultSet rs = stmt.executeQuery(sql);
-            
+
             // rs.next to advance to the next tuple ( each row returned) in the set.
-            while(rs.next()){
+            while (rs.next()) {
                 //Retrieve by column name
-                int id  = rs.getInt("bid");
+                int id = rs.getInt("bid");
                 String name = rs.getString("name");
                 String city = rs.getString("city");
 
@@ -112,18 +105,17 @@ public class Client extends Application {
                 System.out.println("name: " + name);
                 System.out.println("city :" + city);
 
-             }
-            
+            }
+
             con.close();
-            
-            
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            
+
         }
         System.out.println("LOL");
         launch(args);
     }
-    
+
 }
