@@ -51,6 +51,7 @@ public class HomeScreen {
 	private JComboBox categoryBox;
 	private JCheckBox exactChck;
 	private JScrollPane scrollPane;
+	private BusinessObject b;
 	
 	/**
 	 * Launch the application.
@@ -158,6 +159,7 @@ public class HomeScreen {
 				int spinnerVal = (int) rSpinner.getValue();
 				String category = (String) categoryBox.getSelectedItem();
 				boolean exactChecked = exactChck.isSelected();
+				b.clearEntries();
 				System.out.println("Name: " + name + ", stars: " + stars + ", spinner val: " + spinnerVal + ", category: " + category);
 				
 				if(exactChecked) {
@@ -176,12 +178,7 @@ public class HomeScreen {
 							System.out.println(rCategory);
 							System.out.println();
 							
-							JPanel p = new JPanel();
-							p.setPreferredSize(new Dimension(100,100));
-							p.add(new JLabel(rName));
-							p.add(new JLabel(rAddress));
-							p.add(new JLabel(rCategory));
-							scrollPane.add(p);
+							b.addBusiness(rName, rAddress, rCategory);
 						}
 						
 					} catch (SQLException e) {
@@ -208,13 +205,18 @@ public class HomeScreen {
 		lblResults.setBounds(12, 271, 344, 62);
 		searchPanel.add(lblResults);
 		
-		scrollPane = new JScrollPane();
-		scrollPane.setBounds(115, 417, -79, 35);
-		searchPanel.add(scrollPane);
 		
-		JScrollPane scrollPane_1 = new JScrollPane();
-		scrollPane_1.setBounds(12, 325, 924, 271);
-		searchPanel.add(scrollPane_1);
+		
+		
+		
+		
+//		scrollPane = new JScrollPane();
+//		scrollPane.setBounds(12, 325, 924, 271);
+//		searchPanel.add(scrollPane);
+		
+		b = new BusinessObject();
+		b.setBounds(12, 325, 924, 271);
+		searchPanel.add(b);
 		
 		JSeparator separator_2 = new JSeparator();
 		separator_2.setOrientation(SwingConstants.VERTICAL);
