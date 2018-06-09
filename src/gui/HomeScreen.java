@@ -88,6 +88,7 @@ where full_table.category = 'American' and full_table.name like '%burg%' and ful
 	private JCheckBox exactChck;
 	private JScrollPane scrollPane;
 	private BusinessObject b;
+	private FriendsObject FO;
 	private JTextField rNameField;
 	private JTextField rAddressField;
 	private JTextField rCityField;
@@ -418,6 +419,9 @@ where full_table.category = 'American' and full_table.name like '%burg%' and ful
 		btnNewButton.setBounds(338, 138, 118, 25);
 		searchPanel.add(btnNewButton);
 		
+		
+
+		
 		JPanel reviewPanel = new JPanel();
 		tabbedPane.addTab("Add Restaurant", null, reviewPanel, null);
 		reviewPanel.setLayout(null);
@@ -631,6 +635,20 @@ where full_table.category = 'American' and full_table.name like '%burg%' and ful
 		});
 		btnApplyChanges.setBounds(338, 546, 272, 50);
 		userInfoPanel.add(btnApplyChanges);
+		
+		JPanel friendsPanel = new JPanel();
+		tabbedPane.addTab("Friends", null, friendsPanel, null);
+		friendsPanel.setLayout(null);
+		
+		FO = new FriendsObject(u,this);	
+		FO.setForeground(Color.BLACK);
+		FO.setBounds(10, 47, 880, 522);
+		friendsPanel.add(FO);
+		
+		JLabel lblYourFriends = new JLabel("Your Friends :");
+		lblYourFriends.setFont(new Font("Dialog", Font.PLAIN, 25));
+		lblYourFriends.setBounds(10, 11, 220, 35);
+		friendsPanel.add(lblYourFriends);
 		
 		loadHomeReviews();
 	}

@@ -61,6 +61,8 @@ public class ReviewObject extends JPanel {
 		JPanel topPanel = new JPanel(gLayout);
 		
 		topPanel.add(new JLabel(username, SwingConstants.LEADING));
+		System.out.println("username");
+		
 		StarRater r = new StarRater(5, stars);
 		r.setEnabled(false);
 		r.setAlignmentX(Component.CENTER_ALIGNMENT);
