@@ -150,12 +150,18 @@ where full_table.category = 'American' and full_table.name like '%burg%' and ful
 		lblGreetings.setBounds(12, 13, 344, 62);
 		homePanel.add(lblGreetings);
 		
-		System.out.println(u.getLastAccess().getTime());
+		JLabel lblYouLastAccessed;
 		
 		long hour = 3600 * 1000;
-		Timestamp t = new Timestamp(u.getLastAccess().getTime() + 7 * hour);
+		//System.out.println(u.getLastAccess().getTime());
+		if(u.getLastAccess() != null) {
+			//long hour = 3600 * 1000;
+			Timestamp t = new Timestamp(u.getLastAccess().getTime() + 7 * hour);
 		
-		JLabel lblYouLastAccessed = new JLabel("You last accessed Shout! on " + t);
+			lblYouLastAccessed = new JLabel("You last accessed Shout! on " + t);
+		} else {
+			lblYouLastAccessed = new JLabel("This is your first login to Shout!, weclome!");
+		}
 		lblYouLastAccessed.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		lblYouLastAccessed.setBounds(12, 88, 532, 22);
 		homePanel.add(lblYouLastAccessed);
