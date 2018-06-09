@@ -111,6 +111,7 @@ public class ReviewScreen {
 						stmt.executeUpdate(sql);
 						JOptionPane.showMessageDialog(new JFrame(), "Review successfully submitted", "", JOptionPane.INFORMATION_MESSAGE);
 						bs.loadReviews();
+						bs.getHS().loadHomeReviews();
 						bs.frame.validate();
 						bs.frame.repaint();
 						frame.dispose();

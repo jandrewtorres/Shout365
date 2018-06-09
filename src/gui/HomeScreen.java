@@ -363,15 +363,11 @@ where full_table.category = 'American' and full_table.name like '%burg%' and ful
 		searchPanel.add(lblResults);
 		
 		
-		
-		
-		
-		
 //		scrollPane = new JScrollPane();
 //		scrollPane.setBounds(12, 325, 924, 271);
 //		searchPanel.add(scrollPane);
 		
-		b = new BusinessObject(u);
+		b = new BusinessObject(u, this);
 		b.setBounds(12, 325, 924, 271);
 		searchPanel.add(b);
 		
@@ -495,6 +491,12 @@ where full_table.category = 'American' and full_table.name like '%burg%' and ful
 						Statement stmt = Client.getConnection().createStatement();
 						stmt.executeUpdate(sql);
 						JOptionPane.showMessageDialog(new JFrame(), "Restaurant successfully added", "", JOptionPane.INFORMATION_MESSAGE);
+						rNameField.setText("");
+						rAddressField.setText("");
+						rCityField.setText("");
+						rPostalCode.setText("");
+						rCategoryBox.setSelectedIndex(0);
+						rStateBox.setSelectedIndex(0);
 					} catch (SQLException e) {
 						JOptionPane.showMessageDialog(new JFrame(), e.getMessage(), "", JOptionPane.ERROR_MESSAGE);
 						e.printStackTrace();

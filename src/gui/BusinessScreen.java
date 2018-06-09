@@ -37,6 +37,7 @@ public class BusinessScreen {
 	private StarRater avgRater;
 	
 	private BusinessScreen me;
+	private HomeScreen h;
 	/**
 	 * Launch the application.
 	 */
@@ -46,7 +47,7 @@ public class BusinessScreen {
 				try {
 					Business b = new Business(1, "The Burger Joint", "12345 Main St", "Los Angeles", "CA", "90410", "American");
 					User u = new User(0, "test", new Timestamp(System.currentTimeMillis()), "test@test", "test", new Timestamp(System.currentTimeMillis()));
-					BusinessScreen window = new BusinessScreen(b, u);
+					BusinessScreen window = new BusinessScreen(b, u, null);
 					window.show();
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -58,9 +59,10 @@ public class BusinessScreen {
 	/**
 	 * Create the application.
 	 */
-	public BusinessScreen(Business b, User u) {
+	public BusinessScreen(Business b, User u, HomeScreen h) {
 		this.b = b;
 		this.u = u;
+		this.h = h;
 		initialize();
 		me = this;
 	}
@@ -160,4 +162,7 @@ public class BusinessScreen {
 		}
 	}
 	
+	public HomeScreen getHS() {
+		return h;
+	}
 }

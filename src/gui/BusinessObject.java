@@ -32,11 +32,13 @@ public class BusinessObject extends JPanel {
 
 	private JPanel mainList;
 	private User u;
+	private HomeScreen h;
 	
 	private ArrayList<JPanel> activePanels;
 	
-	public BusinessObject(User u) {
+	public BusinessObject(User u, HomeScreen h) {
 		this.u = u;
+		this.h = h;
 		activePanels = new ArrayList<>();
 		setLayout(new BorderLayout());
 
@@ -83,7 +85,7 @@ public class BusinessObject extends JPanel {
 		butt.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				BusinessScreen bs = new BusinessScreen(b, u);
+				BusinessScreen bs = new BusinessScreen(b, u, h);
 				bs.show();
 			}
 		});
