@@ -104,6 +104,8 @@ public class BusinessObject extends JPanel {
 		for(JPanel j : activePanels) {
 			mainList.remove(j);
 		}
+		validate();
+		repaint();
 		activePanels.clear();
 	}
 

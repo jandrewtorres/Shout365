@@ -38,7 +38,7 @@ public class ReviewScreen {
 			public void run() {
 				try {
 					Business b = new Business(1, "The Burger Joint", "12345 Main St", "Los Angeles", "CA", "90410", "American");
-					User u = new User(0, "test", new Date(new Timestamp(System.currentTimeMillis()).getTime()), "test@test", "test");
+					User u = new User(0, "test", new Timestamp(System.currentTimeMillis()), "test@test", "test",  new Timestamp(System.currentTimeMillis()));
 					ReviewScreen window = new ReviewScreen(b, u, null);
 					window.frame.setVisible(true);
 				} catch (Exception e) {
@@ -103,13 +103,14 @@ public class ReviewScreen {
 		btnSubmitReview.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int stars = avgRater.getSelection();
-				if(stars > 1) {
+				if(stars > 0) {
 					try {
 						String sql = "insert into review(bid, uid, stars, date, text) values (" + b.getbID() + "," + u.getUid() + "," + stars + ",'" + new Timestamp(System.currentTimeMillis()) + "','" + textArea.getText() + "')";
 						System.out.println(sql);
 						Statement stmt = Client.getConnection().createStatement();
 						stmt.executeUpdate(sql);
 						JOptionPane.showMessageDialog(new JFrame(), "Review successfully submitted", "", JOptionPane.INFORMATION_MESSAGE);
+						bs.loadReviews();
 						bs.frame.validate();
 						bs.frame.repaint();
 						frame.dispose();

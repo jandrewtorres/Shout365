@@ -11,6 +11,8 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Date;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 
@@ -24,9 +26,10 @@ import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.MatteBorder;
 
+import client.Client;
 import model.Review;
 
-public class ReviewObject extends JPanel {
+public class YourReviewsObject extends JPanel {
 
 	/**
 	 * 
@@ -34,10 +37,12 @@ public class ReviewObject extends JPanel {
 	private static final long serialVersionUID = 1L;
 
 	private JPanel mainList;
+	private HomeScreen h; 
 
 	private ArrayList<JPanel> activePanels;
 	
-	public ReviewObject() {
+	public YourReviewsObject(HomeScreen h) {
+		this.h = h;
 		activePanels = new ArrayList<>();
 		setLayout(new BorderLayout());
 
@@ -51,33 +56,33 @@ public class ReviewObject extends JPanel {
 		add(new JScrollPane(mainList));
 	}
 	
-	public void addReview(String username, int stars, String text, Timestamp date) {
-		GridLayout gLayout = new GridLayout(0, 3);
-		GridLayout tLayout = new GridLayout(0, 1);
-		tLayout.setVgap(5);
-		tLayout.setHgap(10);
-		JPanel panel = new JPanel(new BorderLayout());
-		
-		JPanel topPanel = new JPanel(gLayout);
-		
-		topPanel.add(new JLabel(username, SwingConstants.LEADING));
-		StarRater r = new StarRater(5, stars);
-		r.setEnabled(false);
-		r.setAlignmentX(Component.CENTER_ALIGNMENT);
-		topPanel.add(r);
+	public void addReview(Review r, String bName) {
+		GridLayout gLayout = new GridLayout(0, 4);
+		JPanel panel = new JPanel(gLayout);
+		panel.add(new JLabel(bName));
+		StarRater r1 = new StarRater(5, r.getStars());
+		r1.setEnabled(false);
+		panel.add(r1);
 		long hour = 3600 * 1000;
-		Timestamp tFinal = new Timestamp(date.getTime() + 7 * hour);
-		topPanel.add(new JLabel(tFinal.toString(), SwingConstants.TRAILING));
+		Timestamp t = new Timestamp(r.getDate().getTime() + 7 * hour);
+		panel.add(new JLabel(t.toString()));
+		JButton b = new JButton("Remove Review");
 		
-		JPanel bottomPanel = new JPanel(new BorderLayout());
-		JTextArea t = new JTextArea(text);
-		t.setEditable(false);
-		t.setLineWrap(true);
-		bottomPanel.add(t);
+		b.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				String sql = "delete from review where rid = " + r.getReviewID();
+				try {
+					Statement stmt = Client.getConnection().createStatement();
+					stmt.executeUpdate(sql);
+					h.loadHomeReviews();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		});
 		
-		panel.add(topPanel, BorderLayout.NORTH);
-		panel.add(bottomPanel, BorderLayout.SOUTH);
-		
+		panel.add(b);
 		panel.setBorder(new MatteBorder(0, 0, 1, 0, Color.GRAY));
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridwidth = GridBagConstraints.REMAINDER;

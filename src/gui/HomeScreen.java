@@ -13,15 +13,21 @@ import javax.swing.SwingConstants;
 
 import client.Client;
 import model.Business;
+import model.Review;
 import model.User;
 
 import java.awt.Font;
-import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
 
 import javax.swing.JSeparator;
 import java.awt.Color;
@@ -40,6 +46,35 @@ import java.awt.event.KeyEvent;
 import javax.swing.JCheckBox;
 
 public class HomeScreen {
+	
+	/**
+	 * 	select coalesce(full_reviews.count, 0) as num_reviews, coalesce(full_reviews.avg_stars, 0) as avg_stars, business.bid, business.name, business.address, business.city, business.state, business.postal_code, business.category
+	 *	from
+	 *	(select B1.bid as cbid, count_and_stars.count, count_and_stars.avg_stars
+	 *	from business B1, (
+	 *	select R.bid, count(*) as count, avg(R.stars) as avg_stars
+	 *	from review R, business B
+	 *	where B.bid = R.bid
+	 *	group by R.bid) as count_and_stars
+	 *	where B1.bid = count_and_stars.bid) as full_reviews
+	 *	right join business on business.bid = full_reviews.cbid
+	 */
+	
+	/**
+	 * select * 
+from (
+select coalesce(full_reviews.count, 0) as num_reviews, coalesce(full_reviews.avg_stars, 0) as avg_stars, business.bid, business.name, business.address, business.city, business.state, business.postal_code, business.category
+from
+(select B1.bid as cbid, count_and_stars.count, count_and_stars.avg_stars
+from business B1, (
+select R.bid, count(*) as count, avg(R.stars) as avg_stars
+from review R, business B
+where B.bid = R.bid
+group by R.bid) as count_and_stars
+where B1.bid = count_and_stars.bid) as full_reviews
+right join business on business.bid = full_reviews.cbid) as full_table
+where full_table.category = 'American' and full_table.name like '%burg%' and full_table.num_reviews >= 4 and full_table.avg_stars >= 4
+	 */
 
 	private JFrame frame;
 	private User u;
@@ -59,6 +94,7 @@ public class HomeScreen {
 	private JTextField rPostalCode;
 	private JComboBox rCategoryBox;
 	private JComboBox rStateBox; 
+	private YourReviewsObject yro;
 	
 	/**
 	 * Launch the application.
@@ -67,7 +103,7 @@ public class HomeScreen {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					User u = new User(0, "test", new Date(new Timestamp(System.currentTimeMillis()).getTime()), "test@test", "test");
+					User u = new User(0, "test", new Timestamp(System.currentTimeMillis()), "test@test", "test", new Timestamp(System.currentTimeMillis()));
 					HomeScreen window = new HomeScreen(u);
 					window.show();
 				} catch (Exception e) {
@@ -107,6 +143,36 @@ public class HomeScreen {
 		
 		JPanel homePanel = new JPanel();
 		tabbedPane.addTab("Home", null, homePanel, null);
+		homePanel.setLayout(null);
+		
+		JLabel lblGreetings = new JLabel("Greetings, " +  u.getUsername());
+		lblGreetings.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 25));
+		lblGreetings.setBounds(12, 13, 344, 62);
+		homePanel.add(lblGreetings);
+		
+		System.out.println(u.getLastAccess().getTime());
+		
+		long hour = 3600 * 1000;
+		Timestamp t = new Timestamp(u.getLastAccess().getTime() + 7 * hour);
+		
+		JLabel lblYouLastAccessed = new JLabel("You last accessed Shout! on " + t);
+		lblYouLastAccessed.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		lblYouLastAccessed.setBounds(12, 88, 532, 22);
+		homePanel.add(lblYouLastAccessed);
+		
+		yro = new YourReviewsObject(this);
+		yro.setLocation(12, 229);
+		yro.setSize(924, 367);
+		homePanel.add(yro);
+		
+		JSeparator separator_3 = new JSeparator();
+		separator_3.setBounds(0, 139, 948, 2);
+		homePanel.add(separator_3);
+		
+		JLabel lblYourReviews = new JLabel("Your Reviews");
+		lblYourReviews.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 25));
+		lblYourReviews.setBounds(12, 154, 344, 62);
+		homePanel.add(lblYourReviews);
 		
 		JPanel searchPanel = new JPanel();
 		tabbedPane.addTab("Search Restaurants", null, searchPanel, null);
@@ -135,6 +201,7 @@ public class HomeScreen {
 		
 		JPanel raterPanel = new JPanel();
 		starRater = new StarRater(5,0,0);	
+		starRater.setLocation(-1, 142);
 		raterPanel.add(starRater);
 		raterPanel.setBounds(209, 139, 77, 22);
 		searchPanel.add(raterPanel);
@@ -170,7 +237,6 @@ public class HomeScreen {
 				System.out.println("Name: " + name + ", stars: " + stars + ", spinner val: " + spinnerVal + ", category: " + category);
 				
 				if(exactChecked) {
-					System.out.println("runing");
 					try {
 						Statement stmt = Client.getConnection().createStatement();
 						String sql = "select * from business where name = '" + name + "'";
@@ -188,6 +254,90 @@ public class HomeScreen {
 							b.addBusiness(biz);
 						}
 						
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				} else {
+					StringBuilder sql = new StringBuilder();
+					sql.append("select * from business B, review R where");
+					if(!name.isEmpty()) {
+						sql.append(" name like '%" + name + "%' and");
+					}
+					if(!category.equals("")) {
+						sql.append(" category = '" + category + "' and");
+					}
+					
+					StringBuilder fullBuilder = new StringBuilder();
+					fullBuilder.append("select coalesce(full_reviews.count, 0) as num_reviews, coalesce(full_reviews.avg_stars, 0) as avg_stars, business.bid, business.name, business.address, business.city, business.state, business.postal_code, business.category ");
+					fullBuilder.append("from ");
+					fullBuilder.append("(select B1.bid as cbid, count_and_stars.count, count_and_stars.avg_stars ");
+					fullBuilder.append("from business B1, ( ");
+					fullBuilder.append("select R.bid, count(*) as count, avg(R.stars) as avg_stars ");
+					fullBuilder.append("from review R, business B ");
+					fullBuilder.append("where B.bid = R.bid ");
+					fullBuilder.append("group by R.bid) as count_and_stars ");
+					fullBuilder.append("where B1.bid = count_and_stars.bid) as full_reviews ");
+					fullBuilder.append("right join business on business.bid = full_reviews.cbid");
+					String builderString = fullBuilder.toString();
+					String fullSql;
+					if(!name.isEmpty() || !category.equals("") || spinnerVal > 0 || stars > 0) {
+						StringBuilder finalBuilder = new StringBuilder();
+						finalBuilder.append("select * ");
+						finalBuilder.append("from ( ");
+						finalBuilder.append(builderString);
+						finalBuilder.append(") as full_table ");
+						finalBuilder.append("where ");
+						if(!category.equals("")) {
+							finalBuilder.append("full_table.category = '");
+							finalBuilder.append(category);
+							finalBuilder.append("'");
+							if(!name.isEmpty() || spinnerVal > 0 || stars > 0) {
+								finalBuilder.append(" and ");
+							}
+						}
+						if(!name.isEmpty()) {
+							finalBuilder.append("full_table.name like '%");
+							finalBuilder.append(name);
+							finalBuilder.append("%'");
+							if(spinnerVal > 0 || stars > 0) {
+								finalBuilder.append(" and ");
+							}
+						}
+						if(spinnerVal > 0) {
+							finalBuilder.append("full_table.num_reviews >= ");
+							finalBuilder.append(spinnerVal);
+							if(stars > 0) {
+								finalBuilder.append(" and ");
+							}
+						}
+						if(stars > 0) {
+							finalBuilder.append("full_table.avg_stars >= ");
+							finalBuilder.append(stars);
+						}
+						fullSql = finalBuilder.toString();
+					} else {
+						System.out.println("Complete wildcard search");
+						fullSql = builderString;
+					}
+					System.out.println(fullSql);
+					try {
+						Statement stmt = Client.getConnection().createStatement();
+						ResultSet r = stmt.executeQuery(fullSql);
+						int results = 0;
+						while(r.next()) {
+							int rBid = r.getInt("bid");
+							String rName = r.getString("name");
+							String rAddress = r.getString("address");
+							String rCity = r.getString("city");
+							String rState = r.getString("state");
+							String rPC = r.getString("postal_code");
+							String rCategory = r.getString("category");
+							Business biz = new Business(rBid, rName, rAddress, rCity, rState, rPC, rCategory);
+							b.addBusiness(biz);
+							results++;
+						}
+						System.out.println(results);
 					} catch (SQLException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -256,6 +406,15 @@ public class HomeScreen {
 		});
 		exactChck.setBounds(131, 76, 70, 35);
 		searchPanel.add(exactChck);
+		
+		JButton btnNewButton = new JButton("Clear Stars");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				starRater.setSelection(0);
+			}
+		});
+		btnNewButton.setBounds(338, 138, 118, 25);
+		searchPanel.add(btnNewButton);
 		
 		JPanel reviewPanel = new JPanel();
 		tabbedPane.addTab("Add Restaurant", null, reviewPanel, null);
@@ -393,7 +552,9 @@ public class HomeScreen {
 		emailLbl.setBounds(168, 147, 378, 35);
 		userInfoPanel.add(emailLbl);
 		
-		JLabel djLbl = new JLabel(u.getJoined().toString());
+		Timestamp t12 = new Timestamp(u.getJoined().getTime() + 7 * hour);
+		
+		JLabel djLbl = new JLabel(t12.toString());
 		djLbl.setForeground(new Color(25, 25, 112));
 		djLbl.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		djLbl.setBounds(168, 203, 378, 35);
@@ -462,5 +623,31 @@ public class HomeScreen {
 		});
 		btnApplyChanges.setBounds(338, 546, 272, 50);
 		userInfoPanel.add(btnApplyChanges);
+		
+		loadHomeReviews();
+	}
+	
+	public void loadHomeReviews() {
+		yro.clearEntries();
+		
+		String sql = "select B.name, R.rid, R.stars, R.date, R.text from review R, business B where R.uid = " + u.getUid() + " and R.bid = B.bid";
+		try {
+			Statement stmt = Client.getConnection().createStatement();
+			ResultSet rs = stmt.executeQuery(sql);
+			
+			while(rs.next()) {
+				String name = rs.getString("name");
+				int rid = rs.getInt("rid");
+				int stars = rs.getInt("stars");
+				Timestamp t = rs.getTimestamp("date");
+				String text = rs.getString("text");
+				
+				Review r = new Review(rid, -1, -1, stars, t, text);
+				yro.addReview(r, name);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

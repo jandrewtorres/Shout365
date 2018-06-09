@@ -17,6 +17,8 @@ import java.util.Properties;
  */
 public class Client {
 
+	//1528537125895
+	
 	public static Connection CONNECTION = null;
 
 	public static String[] RESTAURANT_CATEGORIES = { "", "Italian", "Greek", "Chinese", "American" };

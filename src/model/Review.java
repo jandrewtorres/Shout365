@@ -6,6 +6,7 @@
 package model;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 
 /**
  *
@@ -17,11 +18,11 @@ public final class Review
     private final int bID;
     private final int uID;
     private final int stars;
-	private Date date;
+	private Timestamp date;
 	private String comments;
     
     
-    public Review(int rid, int bid, int uid, int stars, Date date, String comments)
+    public Review(int rid, int bid, int uid, int stars, Timestamp date, String comments)
     {
         this.rID = rid;
         this.bID = bid;
@@ -51,7 +52,7 @@ public final class Review
       return stars;   
     }
 
-	public Date getDate() {
+	public Timestamp getDate() {
 		return date;
 	}
 

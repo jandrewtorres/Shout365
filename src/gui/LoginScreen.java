@@ -9,6 +9,9 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.Calendar;
+import java.util.TimeZone;
 import java.awt.event.ActionEvent;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -79,11 +82,21 @@ public class LoginScreen {
 						int id = r.getInt("uid");
 						String u = r.getString("username");
 						String p = r.getString("password");
-						Date d = r.getDate("date_joined");
+						Timestamp d = r.getTimestamp("date_joined");
+						Timestamp lastT = r.getTimestamp("last_access");
 						String em = r.getString("email");
 						if(u.equals(username) && p.equals(password)) {
 							System.out.println("Login Successful");
-							User user = new User(id, u, d, em, p);
+							
+							Calendar c = Calendar.getInstance(TimeZone.getTimeZone("America/Los_Angeles"));
+							c.setTimeInMillis(System.currentTimeMillis());
+							System.out.println(c.getTime() + " from l " + c.getTime().getTime());
+							Timestamp t = new Timestamp(c.getTime().getTime());
+							System.out.println(t.getTime());
+							Statement stmt1 = Client.getConnection().createStatement();
+							String sql1 = "update user set last_access = '" + t + "' where uid = " + id;
+							stmt1.executeUpdate(sql1);
+							User user = new User(id, u, d, em, p, lastT);
 							HomeScreen h = new HomeScreen(user);
 							h.show();
 							frame.dispose();

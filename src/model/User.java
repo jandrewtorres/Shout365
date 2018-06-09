@@ -7,6 +7,7 @@
 package model;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 
 /**
  *
@@ -16,25 +17,27 @@ public final class User
 {
 	
 	private String username;
-	private Date joined;
+	private Timestamp joined;
 	private String email;
 	private String password;
 	private final int uid;
-    
-    public User(int uid, String username, Date joined, String email, String password) 
+	private Timestamp lastAccess;
+	
+    public User(int uid, String username, Timestamp joined, String email, String password, Timestamp lastAccess) 
     {
     	this.uid = uid;
     	this.username = username;
     	this.joined = joined;
     	this.email = email;
     	this.password = password;
+    	this.lastAccess = lastAccess;
     }
 
 	public String getUsername() {
 		return username;
 	}
 
-	public Date getJoined() {
+	public Timestamp getJoined() {
 		return joined;
 	}
 
@@ -48,5 +51,9 @@ public final class User
 
 	public int getUid() {
 		return uid;
+	}
+	
+	public Timestamp getLastAccess() {
+		return lastAccess;
 	}
 }

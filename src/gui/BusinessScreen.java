@@ -45,7 +45,7 @@ public class BusinessScreen {
 			public void run() {
 				try {
 					Business b = new Business(1, "The Burger Joint", "12345 Main St", "Los Angeles", "CA", "90410", "American");
-					User u = new User(0, "test", new Date(new Timestamp(System.currentTimeMillis()).getTime()), "test@test", "test");
+					User u = new User(0, "test", new Timestamp(System.currentTimeMillis()), "test@test", "test", new Timestamp(System.currentTimeMillis()));
 					BusinessScreen window = new BusinessScreen(b, u);
 					window.show();
 				} catch (Exception e) {
@@ -72,7 +72,7 @@ public class BusinessScreen {
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize() {
+	void initialize() {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 639, 609);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -134,10 +134,11 @@ public class BusinessScreen {
 		loadReviews();
 	}
 
-	private void loadReviews() {
+	public void loadReviews() {
 		int totalStars = 0;
 		int totalReviews = 0;
 		String sql = "select U.username, R.stars, R.text, R.date from review R, user U where R.bid = " + b.getbID() + " and R.uid = U.uid";
+		rObject.clearEntries();
 		try {
 			Statement stmt = Client.getConnection().createStatement();
 			ResultSet r = stmt.executeQuery(sql);
@@ -146,7 +147,7 @@ public class BusinessScreen {
 				String username = r.getString("username");
 				int stars = r.getInt("stars");
 				String text = r.getString("text");
-				Date d = r.getDate("date");
+				Timestamp d = r.getTimestamp("date");
 				rObject.addReview(username, stars, text, d);
 				totalReviews++;
 				totalStars += stars;
