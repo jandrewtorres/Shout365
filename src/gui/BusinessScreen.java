@@ -5,25 +5,38 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 
 import model.Business;
+import model.Review;
 import model.User;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
 import javax.swing.SwingConstants;
+
+import client.Client;
+
 import javax.swing.JSeparator;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 
 public class BusinessScreen {
 
-	private JFrame frame;
+	JFrame frame;
 	private Business b;
 	private final JSeparator separator = new JSeparator();
 	private User u;
-
+	private ReviewObject rObject;
+	private StarRater avgRater;
+	
+	private BusinessScreen me;
 	/**
 	 * Launch the application.
 	 */
@@ -49,6 +62,7 @@ public class BusinessScreen {
 		this.b = b;
 		this.u = u;
 		initialize();
+		me = this;
 	}
 	
 	public void show() {
@@ -75,7 +89,7 @@ public class BusinessScreen {
 		lblName.setBounds(484, 88, 125, 35);
 		frame.getContentPane().add(lblName);
 		
-		ReviewObject rObject = new ReviewObject();
+		rObject = new ReviewObject();
 		rObject.setLocation(12, 199);
 		rObject.setSize(597, 265);
 		frame.getContentPane().add(rObject);
@@ -101,23 +115,48 @@ public class BusinessScreen {
 		frame.getContentPane().add(label);
 		label.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 25));
 		
-		StarRater avgRater = new StarRater(5);
+		avgRater = new StarRater(5);
 		avgRater.setLocation(529, 157);
 		avgRater.setSize(80, 23);
+		avgRater.setEnabled(false);
 		frame.getContentPane().add(avgRater);
 		
 		JButton btnWriteReview = new JButton("Write Review");
 		btnWriteReview.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				ReviewScreen rScreen = new ReviewScreen(b, u);
+				ReviewScreen rScreen = new ReviewScreen(b, u, me);
 				rScreen.show();
 			}
 		});
 		btnWriteReview.setBounds(196, 477, 234, 32);
 		frame.getContentPane().add(btnWriteReview);
+		
+		loadReviews();
+	}
+
+	private void loadReviews() {
+		int totalStars = 0;
+		int totalReviews = 0;
+		String sql = "select U.username, R.stars, R.text, R.date from review R, user U where R.bid = " + b.getbID() + " and R.uid = U.uid";
+		try {
+			Statement stmt = Client.getConnection().createStatement();
+			ResultSet r = stmt.executeQuery(sql);
+			
+			while(r.next()) {
+				String username = r.getString("username");
+				int stars = r.getInt("stars");
+				String text = r.getString("text");
+				Date d = r.getDate("date");
+				rObject.addReview(username, stars, text, d);
+				totalReviews++;
+				totalStars += stars;
+			}
+			
+			avgRater.setRating((int) Math.floor((totalStars/ (double)totalReviews)));
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(new JFrame(), e.getMessage(), "", JOptionPane.ERROR_MESSAGE);
+			e.printStackTrace();
+		}
 	}
 	
-	// do the sql stuff
-	
-
 }

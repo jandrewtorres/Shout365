@@ -28,6 +28,7 @@ public class ReviewScreen {
 	private JFrame frame;
 	private Business b;
 	private User u;
+	private BusinessScreen bs;
 
 	/**
 	 * Launch the application.
@@ -38,7 +39,7 @@ public class ReviewScreen {
 				try {
 					Business b = new Business(1, "The Burger Joint", "12345 Main St", "Los Angeles", "CA", "90410", "American");
 					User u = new User(0, "test", new Date(new Timestamp(System.currentTimeMillis()).getTime()), "test@test", "test");
-					ReviewScreen window = new ReviewScreen(b, u);
+					ReviewScreen window = new ReviewScreen(b, u, null);
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -50,9 +51,10 @@ public class ReviewScreen {
 	/**
 	 * Create the application.
 	 */
-	public ReviewScreen(Business b, User u) {
+	public ReviewScreen(Business b, User u, BusinessScreen bs) {
 		this.b = b;
 		this.u = u;
+		this.bs = bs;
 		initialize();
 	}
 	
@@ -108,6 +110,8 @@ public class ReviewScreen {
 						Statement stmt = Client.getConnection().createStatement();
 						stmt.executeUpdate(sql);
 						JOptionPane.showMessageDialog(new JFrame(), "Review successfully submitted", "", JOptionPane.INFORMATION_MESSAGE);
+						bs.frame.validate();
+						bs.frame.repaint();
 						frame.dispose();
 					} catch (SQLException e1) {
 						JOptionPane.showMessageDialog(new JFrame(), e1.getMessage(), "", JOptionPane.ERROR_MESSAGE);
