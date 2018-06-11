@@ -77,6 +77,7 @@ public class LoginScreen {
 					Statement stmt = Client.getConnection().createStatement();
 					String sql = "select * from user where username = '" + username + "'";
 					ResultSet r = stmt.executeQuery(sql);
+					int i = 0;
 					while(r.next()) {
 						System.out.println("runing result set");
 						int id = r.getInt("uid");
@@ -103,6 +104,10 @@ public class LoginScreen {
 						} else {
 							JOptionPane.showMessageDialog(new JFrame(), "Invalid username or password", "", JOptionPane.ERROR_MESSAGE);
 						}
+						i++;
+					}
+					if(i == 0) {
+						JOptionPane.showMessageDialog(new JFrame(), "Invalid username or password", "", JOptionPane.ERROR_MESSAGE);
 					}
 				} catch (SQLException e1) {
 					JOptionPane.showMessageDialog(new JFrame(), e1.getMessage(), "", JOptionPane.ERROR_MESSAGE);

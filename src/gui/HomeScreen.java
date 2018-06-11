@@ -417,6 +417,7 @@ where full_table.category = 'American' and full_table.name like '%burg%' and ful
 				if(exactChck.isSelected()) {
 					rSpinner.setEnabled(false);
 					starRater.setEnabled(false);
+					starRater.setSelection(0);
 					categoryBox.setEnabled(false);
 				} else {
 					rSpinner.setEnabled(true);
@@ -714,6 +715,7 @@ where full_table.category = 'American' and full_table.name like '%burg%' and ful
 							Statement stmt2 = Client.getConnection().createStatement();
 							stmt2.executeUpdate(sql);
 							loadPending();
+							textField.setText("");
 							JOptionPane.showMessageDialog(new JFrame(), "Request sent!", "", JOptionPane.INFORMATION_MESSAGE);
 						} else {
 							JOptionPane.showMessageDialog(new JFrame(), "You are already friends with that user!", "", JOptionPane.ERROR_MESSAGE);
