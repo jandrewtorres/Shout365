@@ -77,7 +77,7 @@ public class BusinessScreen {
 	void initialize() {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 639, 609);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
 		JLabel label_1 = new JLabel(b.getAddress() + ", " + b.getCity() + " " + b.getState() + " " + b.getZIP());

@@ -55,7 +55,7 @@ public class FriendReviewScreen {
 	private void initialize() {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 450, 425);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
 		ro = new ReviewObject();
@@ -76,13 +76,15 @@ public class FriendReviewScreen {
 	}
 	
 	public void loadReviews() {
-		String sql = "select U.username, R.stars, R.text, R.date from review R, user U where R.bid = " + uid + " and R.uid = U.uid";
+		//String sql = "select U.username, R.stars, R.text, R.date from review R, user U where R.uid = " + uid + " and R.uid = U.uid";
+		String sql = "select B.name, R.stars, R.text, R.date from review R, business B where R.uid = " + uid + " and B.bid = R.bid";
+		System.out.println(sql);
 		try {
 			Statement stmt = Client.getConnection().createStatement();
 			ResultSet r = stmt.executeQuery(sql);
 			
 			while(r.next()) {
-				String username = r.getString("username");
+				String username = r.getString("name");
 				int stars = r.getInt("stars");
 				String text = r.getString("text");
 				Timestamp d = r.getTimestamp("date");

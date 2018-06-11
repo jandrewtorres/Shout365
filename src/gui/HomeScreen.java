@@ -706,14 +706,18 @@ where full_table.category = 'American' and full_table.name like '%burg%' and ful
 					}
 					
 					if(uid_to != -1 && !username_to.equals("")) {
-						Timestamp t = new Timestamp(System.currentTimeMillis());
-						int uid_from = u.getUid();
-						
-						String sql = "insert into friend_request values(" + uid_from + "," + uid_to + ",'" + t + "','"+ username_to +  "','" + u.getUsername() + "')";
-						Statement stmt2 = Client.getConnection().createStatement();
-						stmt2.executeUpdate(sql);
-						loadPending();
-						JOptionPane.showMessageDialog(new JFrame(), "Request sent!", "", JOptionPane.INFORMATION_MESSAGE);
+						if(!alreadyHasFriend(uid_to)) {
+							Timestamp t = new Timestamp(System.currentTimeMillis());
+							int uid_from = u.getUid();
+							
+							String sql = "insert into friend_request values(" + uid_from + "," + uid_to + ",'" + t + "','"+ username_to +  "','" + u.getUsername() + "')";
+							Statement stmt2 = Client.getConnection().createStatement();
+							stmt2.executeUpdate(sql);
+							loadPending();
+							JOptionPane.showMessageDialog(new JFrame(), "Request sent!", "", JOptionPane.INFORMATION_MESSAGE);
+						} else {
+							JOptionPane.showMessageDialog(new JFrame(), "You are already friends with that user!", "", JOptionPane.ERROR_MESSAGE);
+						}
 					} else {
 						JOptionPane.showMessageDialog(new JFrame(), "No user found with that username", "", JOptionPane.ERROR_MESSAGE);
 					}
@@ -746,6 +750,25 @@ where full_table.category = 'American' and full_table.name like '%burg%' and ful
 		loadPending();
 		loadIncoming();
 		loadFriends();
+	}
+	
+	private boolean alreadyHasFriend(int uid_f) {
+		String sql = "select * from friend where uid_f1 = " + u.getUid() + " or uid_f2 = " + u.getUid();
+		
+		try {
+			Statement stmt = Client.getConnection().createStatement();
+			ResultSet rs = stmt.executeQuery(sql);
+			
+			while(rs.next()) {
+				String username = rs.getString("username_f1").equals(u.getUsername()) ? rs.getString("username_f2") :  rs.getString("username_f1");
+				int uid = rs.getInt("uid_f1") == u.getUid() ? rs.getInt("uid_f2") : rs.getInt("uid_f1");
+				return uid_f == uid;
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
 	}
 	
 	public void loadPending() {

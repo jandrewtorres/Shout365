@@ -63,7 +63,7 @@ public class SignUpScreen {
 	private void initialize() {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 357, 323);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
 		JLabel lblShoutSignup = new JLabel("Shout! Sign-up");

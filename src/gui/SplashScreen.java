@@ -109,11 +109,9 @@ public class SplashScreen {
 		JButton btnSignUp = new JButton("Sign Up");
 		btnSignUp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(!signUpScreenExists) {
 					System.out.println("Clicking sign-up");
 					SignUpScreen S = new SignUpScreen();
 					signUpScreenExists = true;
-				}
 			}
 		});
 		btnSignUp.setBounds(165, 190, 155, 39);
