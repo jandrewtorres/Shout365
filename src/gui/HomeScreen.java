@@ -80,6 +80,16 @@ right join business on business.bid = full_reviews.cbid) as full_table
 where full_table.category = 'American' and full_table.name like '%burg%' and full_table.num_reviews >= 4 and full_table.avg_stars >= 4
 	 */
 
+	/**
+	 * create table friend_request (
+	uid_from int not null,
+    uid_to int not null,
+	foreign key(uid_from) references user(uid),
+    foreign key(uid_to) references user(uid),
+    primary key(uid_from, uid_to)
+);
+	 */
+	
 	private JFrame frame;
 	private User u;
 	private JTextField emailField;
@@ -100,6 +110,10 @@ where full_table.category = 'American' and full_table.name like '%burg%' and ful
 	private JComboBox rStateBox; 
 	private YourReviewsObject yro;
 	private JTable friendTable;
+	private JTextField textField;
+	private PendingRequestObject pro;
+	private IncomingRequestObject irq;
+	private FriendListObject flo;
 	
 	/**
 	 * Launch the application.
@@ -524,9 +538,6 @@ where full_table.category = 'American' and full_table.name like '%burg%' and ful
 		rStateBox.setBounds(264, 238, 241, 22);
 		reviewPanel.add(rStateBox);
 		
-		JPanel panel = new JPanel();
-		tabbedPane.addTab("New tab", null, panel, null);
-		
 		
 		JPanel userInfoPanel = new JPanel();
 		tabbedPane.addTab("User Information", null, userInfoPanel, null);
@@ -644,68 +655,154 @@ where full_table.category = 'American' and full_table.name like '%burg%' and ful
 		tabbedPane.addTab("Friends", null, friendPanel, null);
 		friendPanel.setLayout(null);
 		
-		JLabel lblFriendReviews = new JLabel("Friends");
-		lblFriendReviews.setFont(new Font("Dialog", Font.PLAIN, 25));
-		lblFriendReviews.setBounds(6, 6, 233, 28);
-		friendPanel.add(lblFriendReviews);
+		JLabel lblFriends = new JLabel("Friends");
+		lblFriends.setHorizontalAlignment(SwingConstants.CENTER);
+		lblFriends.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 25));
+		lblFriends.setBounds(12, 13, 449, 62);
+		friendPanel.add(lblFriends);
 		
-		JButton btnAddFriend = new JButton("Add Friend");
-		btnAddFriend.setBounds(809, 5, 117, 29);
+		JLabel lblPendingRequests = new JLabel("Add Friend/Pending Requests");
+		lblPendingRequests.setHorizontalAlignment(SwingConstants.CENTER);
+		lblPendingRequests.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 25));
+		lblPendingRequests.setBounds(487, 13, 449, 62);
+		friendPanel.add(lblPendingRequests);
+		
+		JSeparator separator_4 = new JSeparator();
+		separator_4.setOrientation(SwingConstants.VERTICAL);
+		separator_4.setBounds(473, 13, 2, 583);
+		friendPanel.add(separator_4);
+		
+		JSeparator separator_5 = new JSeparator();
+		separator_5.setBounds(487, 303, 449, 2);
+		friendPanel.add(separator_5);
+		
+		JLabel lblIncomingRequests = new JLabel("Incoming Requests");
+		lblIncomingRequests.setHorizontalAlignment(SwingConstants.CENTER);
+		lblIncomingRequests.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 25));
+		lblIncomingRequests.setBounds(487, 320, 449, 62);
+		friendPanel.add(lblIncomingRequests);
+		
+		textField = new JTextField();
+		textField.setToolTipText("Enter the friend's username here");
+		textField.setBounds(487, 268, 216, 22);
+		friendPanel.add(textField);
+		textField.setColumns(10);
+		
+		JButton btnAddFriend = new JButton("Add friend");
+		btnAddFriend.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					Statement stmt = Client.getConnection().createStatement();
+					
+					String getFriendId = "select uid, username from user where username = '" + textField.getText() + "'";
+					
+					ResultSet r = stmt.executeQuery(getFriendId);
+					
+					int uid_to = -1;
+					String username_to = "";
+					while(r.next()) {
+						uid_to = r.getInt("uid");
+						username_to = r.getString("username");
+					}
+					
+					if(uid_to != -1 && !username_to.equals("")) {
+						Timestamp t = new Timestamp(System.currentTimeMillis());
+						int uid_from = u.getUid();
+						
+						String sql = "insert into friend_request values(" + uid_from + "," + uid_to + ",'" + t + "','"+ username_to +  "','" + u.getUsername() + "')";
+						Statement stmt2 = Client.getConnection().createStatement();
+						stmt2.executeUpdate(sql);
+						loadPending();
+						JOptionPane.showMessageDialog(new JFrame(), "Request sent!", "", JOptionPane.INFORMATION_MESSAGE);
+					} else {
+						JOptionPane.showMessageDialog(new JFrame(), "No user found with that username", "", JOptionPane.ERROR_MESSAGE);
+					}
+				} catch (SQLException e) {
+					JOptionPane.showMessageDialog(new JFrame(), e.getMessage(), "", JOptionPane.ERROR_MESSAGE);
+					e.printStackTrace();
+				}
+				
+			}
+		});
+		btnAddFriend.setBounds(715, 267, 221, 25);
 		friendPanel.add(btnAddFriend);
 		
-		friendTable = new JTable(new AbstractTableModel() {
-
-			@Override
-			public int getRowCount() {
-				return 
-			}
-
-			@Override
-			public int getColumnCount() {
-				// TODO Auto-generated method stub
-				return 0;
-			}
-
-			@Override
-			public Object getValueAt(int rowIndex, int columnIndex) {
-				// TODO Auto-generated method stub
-				return null;
-			}
-			
-		});
-		friendTable.setBounds(19, 526, 907, -463);
-		friendPanel.add(friendTable);
+		pro = new PendingRequestObject(this);
+		pro.setLocation(487, 69);
+		pro.setSize(449, 186);
+		friendPanel.add(pro);
 		
+		irq = new IncomingRequestObject(this);
+		irq.setLocation(487, 396);
+		irq.setSize(449, 200);
+		friendPanel.add(irq);
+		
+		flo =  new FriendListObject(this);
+		flo.setLocation(12, 67);
+		flo.setSize(449, 529);
+		friendPanel.add(flo);
+			
 		loadHomeReviews();
+		loadPending();
+		loadIncoming();
+		loadFriends();
+	}
+	
+	public void loadPending() {
+		pro.clearEntries();
+		
+		String sql = "select * from friend_request where uid_from = " + u.getUid();
+		try {
+			Statement stmt = Client.getConnection().createStatement();
+			ResultSet r = stmt.executeQuery(sql);
+			
+			while(r.next()) {
+				String username = r.getString("username_to");
+				Timestamp t = r.getTimestamp("timestamp");
+				pro.addRequest(username, t);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void loadIncoming() {
+		irq.clearEntries();
+		
+		String sql =  "select * from friend_request where uid_to = " + u.getUid();
+		try {
+			Statement stmt = Client.getConnection().createStatement();
+			ResultSet r = stmt.executeQuery(sql);
+			
+			while(r.next()) {
+				String username = r.getString("username_from");
+				int uid_from  = r.getInt("uid_from");
+				irq.addIncomingRequest(username, uid_from);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void loadFriends() {
-		friendTable.clearSelection();
+		flo.clearEntries();
 		
-		String sql = "SELECT U.username as uname, UU.username as fname, UU.uid as fid"
-				+ "" + 
-				"FROM user as U, Friends as F, user as UU" + 
-				"WHERE " + u.getUid() + " = F.userID AND F.friendID = UU.uid ";
+		String sql = "select * from friend where uid_f1 = " + u.getUid() + " or uid_f2 = " + u.getUid();
+		
 		try {
 			Statement stmt = Client.getConnection().createStatement();
 			ResultSet rs = stmt.executeQuery(sql);
 			
 			while(rs.next()) {
-				Integer id = Integer.parseInt(rs.getString("id"));
-				String name = rs.getString("uname");
-				Integer fid = Integer.parseInt(rs.getString("fid"));
-				Integer uid = Integer.parseInt(rs.getString("uid"));
-				String fname = rs.getString("fname");
-				Friend f = new Friend(id, uid, fid, fname, name);
-				
+				String username = rs.getString("username_f1").equals(u.getUsername()) ? rs.getString("username_f2") :  rs.getString("username_f1");
+				int uid = rs.getInt("uid_f1") == u.getUid() ? rs.getInt("uid_f2") : rs.getInt("uid_f1");
+				flo.addFriend(username, uid);
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 	}
-	
 	
 	public void loadHomeReviews() {
 		yro.clearEntries();
@@ -729,5 +826,9 @@ where full_table.category = 'American' and full_table.name like '%burg%' and ful
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	public User getUser() {
+		return u;
 	}
 }
