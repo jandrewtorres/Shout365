@@ -14,12 +14,16 @@ public final class Friend
     private int ID;
     private int uID;
     private int fID;
+    private String fName;
+    private String uName;
     
-    public Friend(int ID, int uID, int fID)
+    public Friend(int ID, int uID, int fID, String fName, String uName)
     {
         this.ID = ID;
         this.uID = uID;
         this.fID = fID;
+        this.fName = fName;
+        this.uName = uName;
     }
     
     public int getID()

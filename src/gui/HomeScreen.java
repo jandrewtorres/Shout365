@@ -10,9 +10,11 @@ import javax.swing.JOptionPane;
 
 import java.awt.FlowLayout;
 import javax.swing.SwingConstants;
+import javax.swing.table.AbstractTableModel;
 
 import client.Client;
 import model.Business;
+import model.Friend;
 import model.Review;
 import model.User;
 
@@ -44,6 +46,8 @@ import javax.swing.JComboBox;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.JCheckBox;
+import javax.swing.JSplitPane;
+import javax.swing.JTable;
 
 public class HomeScreen {
 	
@@ -95,6 +99,7 @@ where full_table.category = 'American' and full_table.name like '%burg%' and ful
 	private JComboBox rCategoryBox;
 	private JComboBox rStateBox; 
 	private YourReviewsObject yro;
+	private JTable friendTable;
 	
 	/**
 	 * Launch the application.
@@ -519,6 +524,9 @@ where full_table.category = 'American' and full_table.name like '%burg%' and ful
 		rStateBox.setBounds(264, 238, 241, 22);
 		reviewPanel.add(rStateBox);
 		
+		JPanel panel = new JPanel();
+		tabbedPane.addTab("New tab", null, panel, null);
+		
 		
 		JPanel userInfoPanel = new JPanel();
 		tabbedPane.addTab("User Information", null, userInfoPanel, null);
@@ -632,8 +640,72 @@ where full_table.category = 'American' and full_table.name like '%burg%' and ful
 		btnApplyChanges.setBounds(338, 546, 272, 50);
 		userInfoPanel.add(btnApplyChanges);
 		
+		JPanel friendPanel = new JPanel();
+		tabbedPane.addTab("Friends", null, friendPanel, null);
+		friendPanel.setLayout(null);
+		
+		JLabel lblFriendReviews = new JLabel("Friends");
+		lblFriendReviews.setFont(new Font("Dialog", Font.PLAIN, 25));
+		lblFriendReviews.setBounds(6, 6, 233, 28);
+		friendPanel.add(lblFriendReviews);
+		
+		JButton btnAddFriend = new JButton("Add Friend");
+		btnAddFriend.setBounds(809, 5, 117, 29);
+		friendPanel.add(btnAddFriend);
+		
+		friendTable = new JTable(new AbstractTableModel() {
+
+			@Override
+			public int getRowCount() {
+				return 
+			}
+
+			@Override
+			public int getColumnCount() {
+				// TODO Auto-generated method stub
+				return 0;
+			}
+
+			@Override
+			public Object getValueAt(int rowIndex, int columnIndex) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+		});
+		friendTable.setBounds(19, 526, 907, -463);
+		friendPanel.add(friendTable);
+		
 		loadHomeReviews();
 	}
+	
+	public void loadFriends() {
+		friendTable.clearSelection();
+		
+		String sql = "SELECT U.username as uname, UU.username as fname, UU.uid as fid"
+				+ "" + 
+				"FROM user as U, Friends as F, user as UU" + 
+				"WHERE " + u.getUid() + " = F.userID AND F.friendID = UU.uid ";
+		try {
+			Statement stmt = Client.getConnection().createStatement();
+			ResultSet rs = stmt.executeQuery(sql);
+			
+			while(rs.next()) {
+				Integer id = Integer.parseInt(rs.getString("id"));
+				String name = rs.getString("uname");
+				Integer fid = Integer.parseInt(rs.getString("fid"));
+				Integer uid = Integer.parseInt(rs.getString("uid"));
+				String fname = rs.getString("fname");
+				Friend f = new Friend(id, uid, fid, fname, name);
+				
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
 	
 	public void loadHomeReviews() {
 		yro.clearEntries();
